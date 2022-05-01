@@ -26,7 +26,7 @@ const stories = [
 
 const App = () => {
     const [searchTerm, setSearchTerm] = useState('')
-    
+
     const handleChange = event => {
         setSearchTerm(event.target.value)
         console.log(event.target.value);
@@ -38,6 +38,12 @@ const App = () => {
 
             <label htmlFor="search">Search: </label>
             <input type="text" id="search" onChange={handleChange} />
+
+            {searchTerm &&
+                <p>
+                    Searching for <strong>{searchTerm}</strong>
+                </p>
+            }
 
             <hr />
 
