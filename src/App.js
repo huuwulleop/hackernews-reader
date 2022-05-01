@@ -26,12 +26,16 @@ const stories = [
 ]
 
 const App = () => {
-    const [searchTerm, setSearchTerm] = useState("")
+    const [searchTerm, setSearchTerm] = useState("React")
 
     const handleSearch = event => {
         setSearchTerm(event.target.value)
         console.log(event.target.value);
     }
+
+    const searchedStories = stories.filter(story => (
+        story.title.toLowerCase().includes(searchTerm.toLowerCase())
+    ))
 
     return (
         <div>
@@ -41,7 +45,7 @@ const App = () => {
 
             <hr />
 
-            <List list={stories} />
+            <List list={searchedStories} />
         </div>
     )
 }
