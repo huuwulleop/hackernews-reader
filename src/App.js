@@ -1,7 +1,14 @@
 
+const title = "HackerNews Reader"
+
 const App = () => {
   return (
-    <div></div>
+    <div>
+      <h1>Welcome to {title}</h1>
+
+      <label htmlFor="search">Search: </label>
+      <input type="text" id="search" />
+    </div>
   )
 }
 
