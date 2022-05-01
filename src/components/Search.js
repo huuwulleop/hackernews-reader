@@ -1,18 +1,11 @@
 
 import React, { useState } from "react"
 
-const Search = () => {
-    const [searchTerm, setSearchTerm] = useState('')
-
-    const handleChange = event => {
-        setSearchTerm(event.target.value)
-        console.log(event.target.value);
-    }
-    
+const Search = ({ onSearch, searchTerm }) => {
     return (
         <div>
             <label htmlFor="search">Search: </label>
-            <input type="text" id="search" onChange={handleChange} />
+            <input type="text" id="search" onChange={onSearch} />
 
             {searchTerm &&
                 <p>

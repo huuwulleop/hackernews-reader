@@ -26,12 +26,18 @@ const stories = [
 ]
 
 const App = () => {
+    const [searchTerm, setSearchTerm] = useState("")
+
+    const handleSearch = event => {
+        setSearchTerm(event.target.value)
+        console.log(event.target.value);
+    }
 
     return (
         <div>
             <h1>Welcome to {title}</h1>
 
-            <Search />
+            <Search onSearch={handleSearch} searchTerm={searchTerm} />
 
             <hr />
 
