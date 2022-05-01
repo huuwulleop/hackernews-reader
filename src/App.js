@@ -2,6 +2,7 @@ import React, { useState } from "react"
 
 // components
 import List from "./components/List"
+import Search from "./components/Search"
 
 const title = "HackerNews Reader"
 
@@ -25,25 +26,12 @@ const stories = [
 ]
 
 const App = () => {
-    const [searchTerm, setSearchTerm] = useState('')
-
-    const handleChange = event => {
-        setSearchTerm(event.target.value)
-        console.log(event.target.value);
-    }
 
     return (
         <div>
             <h1>Welcome to {title}</h1>
 
-            <label htmlFor="search">Search: </label>
-            <input type="text" id="search" onChange={handleChange} />
-
-            {searchTerm &&
-                <p>
-                    Searching for <strong>{searchTerm}</strong>
-                </p>
-            }
+            <Search />
 
             <hr />
 

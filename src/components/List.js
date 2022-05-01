@@ -1,17 +1,14 @@
 
+// components
+import Item from "./Item"
+
 const List = ({ list }) => {
     return (
-        <div>
+        <ul>
             {list.map(item => (
-                <div key={item.objectID}>
-                    <a href={item.url}>{item.title}</a>
-
-                    <span> {item.author}</span>
-                    <span> {item.num_comments}</span>
-                    <span> {item.points}</span>
-                </div>
+                <Item key={item.objectID} item={item} />
             ))}
-        </div>
+        </ul>
     )
 }
 
