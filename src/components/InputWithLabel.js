@@ -8,7 +8,7 @@ const InputWithLabel = ({ id, type, value, onInputChange, isFocused, children })
             inputRef.current.focus()
         }
     }, [isFocused])
-    
+
     return (
         <>
             <label htmlFor={id}>{children} </label>

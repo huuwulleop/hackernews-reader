@@ -76,6 +76,7 @@ const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query="
 
 const App = () => {
     const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React")
+    const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`)
 
     // const [stories, setStories] = useState([])
     // const [isLoading, setIsLoading] = useState(false)
@@ -93,7 +94,7 @@ const App = () => {
 
         dispatchStories({ type: "STORIES_FETCH_INIT" })
 
-        fetch(`${API_ENDPOINT}${searchTerm}`)
+        fetch(url)
             .then(response => response.json())
             .then(result => {
                 dispatchStories({
@@ -104,7 +105,7 @@ const App = () => {
             .catch(() => (
                 dispatchStories({ type: "STORIES_FETCH_FAILURE" })
             ))
-    }, [searchTerm])
+    }, [url])
 
     useEffect(() => {
         handleFetchStories()
@@ -119,9 +120,13 @@ const App = () => {
         })
     }
 
-    const handleSearch = event => {
+    const handleSearchInput = event => {
         setSearchTerm(event.target.value)
         // console.log(event.target.value);
+    }
+
+    const handleSearchSubmit = () => {
+        setUrl(`${API_ENDPOINT}${searchTerm}`)
     }
 
     // From using combined reducer (data)
@@ -133,7 +138,11 @@ const App = () => {
         <div>
             <h1>{title}</h1>
 
-            <Search onSearch={handleSearch} searchTerm={searchTerm} />
+            <Search
+                handleSearchInput={handleSearchInput}
+                handleSearchSubmit={handleSearchSubmit}
+                searchTerm={searchTerm}
+            />
 
             {stories.isError && <p>Failed to load articles</p>}
 

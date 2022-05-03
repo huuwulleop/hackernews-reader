@@ -4,7 +4,7 @@ import React, { useState } from "react"
 // components
 import InputWithLabel from "./InputWithLabel";
 
-const Search = ({ onSearch, searchTerm }) => {
+const Search = ({ handleSearchInput, handleSearchSubmit, searchTerm }) => {
     return (
         <>
             <InputWithLabel
@@ -13,10 +13,21 @@ const Search = ({ onSearch, searchTerm }) => {
                 type="text"
                 value={searchTerm}
                 isFocused
-                onInputChange={onSearch}
+                onInputChange={handleSearchInput}
             >
                 <strong>Search:</strong>
             </InputWithLabel>
+
+            &nbsp;
+
+            <button
+                type="button"
+                disabled={!searchTerm}
+                onClick={handleSearchSubmit}
+            >
+                Submit
+            </button>
+
             {searchTerm &&
                 <p>
                     Searching for <strong>{searchTerm}</strong>...
