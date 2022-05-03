@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useReducer } from "react"
 
 // components
 import List from "./components/List"
@@ -37,32 +37,92 @@ const getAsyncStories = () => (
     ))
 )
 
+const storiesReducer = (state, action) => {
+    switch (action.type) {
+        case "STORIES_FETCH_INIT":
+            return {
+                ...state,
+                isLoading: true,
+                isError: false,
+            }
+        case "STORIES_FETCH_SUCCESS":
+            return {
+                ...state,
+                isLoading: false,
+                isError: false,
+                data: action.payload,
+            }
+        case "STORIES_FETCH_FAILURE":
+            return {
+                ...state,
+                isLoading: false,
+                isError: true,
+            }
+        case "SET_STORIES":
+            return action.payload
+        case "REMOVE_STORY":
+            return {
+                ...state,
+                data: state.data.filter(story => (
+                    action.payload.objectID !== story.objectID
+                ))
+            }
+        default:
+            throw new Error()
+    }
+}
+
+const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query="
+
 const App = () => {
     const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React")
 
-    const [stories, setStories] = useState([])
-    const [isLoading, setIsLoading] = useState(false)
-    const [isError, setIsError] = useState(false)
+    // const [stories, setStories] = useState([])
+    // const [isLoading, setIsLoading] = useState(false)
+    // const [isError, setIsError] = useState(false)
+
+    // reducer
+    const [stories, dispatchStories] = useReducer(
+        storiesReducer,
+        { data: [], isLoading: false, isError: false }
+    )
 
     // Get stories
     useEffect(() => {
-        setIsLoading(true)
+        if (!searchTerm) return
+        // setIsLoading(true)
+        dispatchStories({ type: "STORIES_FETCH_INIT" })
 
-        getAsyncStories()
+        // getAsyncStories()
+        //     .then(result => {
+        //         // setStories(result.data.stories)
+        //         dispatchStories({
+        //             type: "STORIES_FETCH_SUCCESS",
+        //             payload: result.data.stories,
+        //         })
+        //         // setIsLoading(false)
+        //     })
+
+        fetch(`${API_ENDPOINT}${searchTerm}`)
+            .then(response => response.json())
             .then(result => {
-                setStories(result.data.stories)
-                setIsLoading(false)
+                dispatchStories({
+                    type: "STORIES_FETCH_SUCCESS",
+                    payload: result.hits
+                })
             })
-            .catch(() => setIsError(true))
-    }, [])
+            .catch(() => (
+                dispatchStories({ type: "STORIES_FETCH_FAILURE" })
+            ))
+    }, [searchTerm])
 
     // Remove story
     const handleRemoveStory = (item) => {
-        const newStories = stories.filter(story => (
-            item.objectID !== story.objectID
-        ))
-
-        setStories(newStories)
+        // setStories(newStories)
+        dispatchStories({
+            type: "REMOVE_STORY",
+            payload: item,
+        })
     }
 
     const handleSearch = event => {
@@ -70,7 +130,8 @@ const App = () => {
         // console.log(event.target.value);
     }
 
-    const searchedStories = stories.filter(story => (
+    // From using combined reducer (data)
+    const searchedStories = stories.data.filter(story => (
         story.title.toLowerCase().includes(searchTerm.toLowerCase())
     ))
 
@@ -80,14 +141,16 @@ const App = () => {
 
             <Search onSearch={handleSearch} searchTerm={searchTerm} />
 
-            {isError && <p>Failed to load articles</p>}
+            {stories.isError && <p>Failed to load articles</p>}
 
             <hr />
-            {isLoading ? (
+            {stories.isLoading ? (
                 <p>Loading articles...</p>
             ) : (
-                <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+                <List list={stories.data} onRemoveItem={handleRemoveStory} />
             )}
+
+            {searchedStories.length === 0 && !stories.isLoading && !stories.isError && <p>No articles found</p>}
 
         </div>
     )
