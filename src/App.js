@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 
 // components
 import List from "./components/List"
@@ -26,11 +26,17 @@ const stories = [
 ]
 
 const App = () => {
-    const [searchTerm, setSearchTerm] = useState("React")
+    const [searchTerm, setSearchTerm] = useState(
+        localStorage.getItem("search") || "React"
+    )
+
+    useEffect(() => {
+        localStorage.setItem("search", searchTerm)
+    }, [searchTerm])
 
     const handleSearch = event => {
         setSearchTerm(event.target.value)
-        console.log(event.target.value);
+        // console.log(event.target.value);
     }
 
     const searchedStories = stories.filter(story => (
