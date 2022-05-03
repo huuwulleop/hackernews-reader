@@ -127,9 +127,15 @@ const App = () => {
         setUrl(`${API_ENDPOINT}${searchTerm}`)
     }
 
-    // From using combined reducer (data)
+    const checkNull = story => {
+        if (!story.title || !story.url || !story.author || !story.num_comments || !story.points) {
+            return false
+        }
+        return true
+    }
+
     const searchedStories = stories.data.filter(story => (
-        story.title.toLowerCase().includes(searchTerm.toLowerCase())
+        checkNull(story) && story.title.toLowerCase().includes(searchTerm.toLowerCase())
     ))
 
     return (
@@ -148,7 +154,7 @@ const App = () => {
             {stories.isLoading ? (
                 <p>Loading articles...</p>
             ) : (
-                <List list={stories.data} onRemoveItem={handleRemoveStory} />
+                <List list={searchedStories} onRemoveItem={handleRemoveStory} />
             )}
 
             {searchedStories.length === 0 && !stories.isLoading && !stories.isError && <p>No articles found</p>}
