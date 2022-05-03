@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react"
+import React, { useState, useEffect, useReducer, useCallback, Fragment } from "react"
 
 // components
 import List from "./components/List"
@@ -76,6 +76,7 @@ const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query="
 
 const App = () => {
     const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React")
+    const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`)
 
     // const [stories, setStories] = useState([])
     // const [isLoading, setIsLoading] = useState(false)
@@ -88,22 +89,10 @@ const App = () => {
     )
 
     // Get stories
-    useEffect(() => {
-        if (!searchTerm) return
-        // setIsLoading(true)
+    const handleFetchStories = useCallback(() => {
         dispatchStories({ type: "STORIES_FETCH_INIT" })
 
-        // getAsyncStories()
-        //     .then(result => {
-        //         // setStories(result.data.stories)
-        //         dispatchStories({
-        //             type: "STORIES_FETCH_SUCCESS",
-        //             payload: result.data.stories,
-        //         })
-        //         // setIsLoading(false)
-        //     })
-
-        fetch(`${API_ENDPOINT}${searchTerm}`)
+        fetch(url)
             .then(response => response.json())
             .then(result => {
                 dispatchStories({
@@ -114,7 +103,11 @@ const App = () => {
             .catch(() => (
                 dispatchStories({ type: "STORIES_FETCH_FAILURE" })
             ))
-    }, [searchTerm])
+    }, [url])
+
+    useEffect(() => {
+        handleFetchStories()
+    }, [handleFetchStories])
 
     // Remove story
     const handleRemoveStory = (item) => {
@@ -125,29 +118,52 @@ const App = () => {
         })
     }
 
-    const handleSearch = event => {
+    const handleSearchInput = event => {
         setSearchTerm(event.target.value)
         // console.log(event.target.value);
     }
 
-    // From using combined reducer (data)
+    const handleSearchSubmit = () => {
+        setUrl(`${API_ENDPOINT}${searchTerm}`)
+    }
+
+    // Filters garbage articles
+    const checkNull = story => {
+        if (!story.title || !story.url || !story.author || !story.num_comments || !story.points) {
+            return false
+        }
+        return true
+    }
+
+    // search only after clicking submit
     const searchedStories = stories.data.filter(story => (
-        story.title.toLowerCase().includes(searchTerm.toLowerCase())
+        checkNull(story) // && story.title.toLowerCase().includes(searchTerm.toLowerCase())
     ))
 
     return (
         <div>
             <h1>{title}</h1>
 
-            <Search onSearch={handleSearch} searchTerm={searchTerm} />
+            <Search
+                handleSearchInput={handleSearchInput}
+                handleSearchSubmit={handleSearchSubmit}
+                searchTerm={searchTerm}
+            />
+
+            {searchTerm && stories.isLoading &&
+                <p>
+                    Searching for <strong>{searchTerm}</strong>...
+                </p>
+            }
+
+            <hr />
 
             {stories.isError && <p>Failed to load articles</p>}
 
-            <hr />
             {stories.isLoading ? (
                 <p>Loading articles...</p>
             ) : (
-                <List list={stories.data} onRemoveItem={handleRemoveStory} />
+                <List list={searchedStories} onRemoveItem={handleRemoveStory} />
             )}
 
             {searchedStories.length === 0 && !stories.isLoading && !stories.isError && <p>No articles found</p>}
