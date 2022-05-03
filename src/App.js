@@ -40,12 +40,37 @@ const getAsyncStories = () => (
 
 const storiesReducer = (state, action) => {
     switch (action.type) {
+        case "STORIES_FETCH_INIT":
+            return {
+                ...state,
+                isLoading: true,
+                isError: false,
+            }
+        case "STORIES_FETCH_SUCCESS":
+            return {
+                ...state,
+                isLoading: false,
+                isError: false,
+                data: action.payload,
+            }
+        case "STORIES_FETCH_FAILURE":
+            return {
+                ...state,
+                isLoading: false,
+                isError: true,
+            }
         case "SET_STORIES":
             return action.payload
         case "REMOVE_STORY":
-            return state.filter(story => (
-                action.payload.objectID !== story.objectID
-            ))
+            // return state.filter(story => (
+            //     action.payload.objectID !== story.objectID
+            // ))
+            return {
+                ...state,
+                data: state.data.filter(story => (
+                    action.payload.objectID !== story.objectID
+                ))
+            }
         default:
             throw new Error()
     }
@@ -59,26 +84,29 @@ const App = () => {
     // reducer
     const [stories, dispatchStories] = useReducer(
         storiesReducer,
-        []
+        { data: [], isLoading: false, isError: false }
     )
 
-    const [isLoading, setIsLoading] = useState(false)
-    const [isError, setIsError] = useState(false)
+    // const [isLoading, setIsLoading] = useState(false)
+    // const [isError, setIsError] = useState(false)
 
     // Get stories
     useEffect(() => {
-        setIsLoading(true)
+        // setIsLoading(true)
+        dispatchStories({ type: "STORIES_FETCH_INIT" })
 
         getAsyncStories()
             .then(result => {
                 // setStories(result.data.stories)
                 dispatchStories({
-                    type: "SET_STORIES",
+                    type: "STORIES_FETCH_SUCCESS",
                     payload: result.data.stories,
                 })
-                setIsLoading(false)
+                // setIsLoading(false)
             })
-            .catch(() => setIsError(true))
+            .catch(() => (
+                dispatchStories({ type: "STORIES_FETCH_FAILURE" })
+            ))
     }, [])
 
     // Remove story
@@ -99,7 +127,8 @@ const App = () => {
         // console.log(event.target.value);
     }
 
-    const searchedStories = stories.filter(story => (
+    // From using combined reducer (data)
+    const searchedStories = stories.data.filter(story => (
         story.title.toLowerCase().includes(searchTerm.toLowerCase())
     ))
 
@@ -109,16 +138,16 @@ const App = () => {
 
             <Search onSearch={handleSearch} searchTerm={searchTerm} />
 
-            {isError && <p>Failed to load articles</p>}
+            {stories.isError && <p>Failed to load articles</p>}
 
             <hr />
-            {isLoading ? (
+            {stories.isLoading ? (
                 <p>Loading articles...</p>
             ) : (
                 <List list={searchedStories} onRemoveItem={handleRemoveStory} />
             )}
 
-            {searchedStories.length === 0 && !isLoading && !isError && <p>No articles found</p>}
+            {searchedStories.length === 0 && !stories.isLoading && !stories.isError && <p>No articles found</p>}
 
         </div>
     )
