@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useReducer } from "react"
 
 // components
 import List from "./components/List"
@@ -37,10 +37,25 @@ const getAsyncStories = () => (
     ))
 )
 
+const storiesReducer = (state, action) => {
+    if (action.type === "SET_STORIES") {
+        return action.payload
+    } else {
+        throw new Error()
+    }
+}
+
 const App = () => {
     const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React")
 
-    const [stories, setStories] = useState([])
+    // const [stories, setStories] = useState([])
+
+    // reducer
+    const [stories, dispatchStories] = useReducer(
+        storiesReducer,
+        []
+    )
+
     const [isLoading, setIsLoading] = useState(false)
     const [isError, setIsError] = useState(false)
 
@@ -50,7 +65,11 @@ const App = () => {
 
         getAsyncStories()
             .then(result => {
-                setStories(result.data.stories)
+                // setStories(result.data.stories)
+                dispatchStories({
+                    type: "SET_STORIES",
+                    payload: result.data.stories,
+                })
                 setIsLoading(false)
             })
             .catch(() => setIsError(true))
@@ -62,7 +81,11 @@ const App = () => {
             item.objectID !== story.objectID
         ))
 
-        setStories(newStories)
+        // setStories(newStories)
+        dispatchStories({
+            type: "SET_STORIES",
+            payload: newStories,
+        })
     }
 
     const handleSearch = event => {
