@@ -4,6 +4,9 @@ import React, { useState, useEffect } from "react"
 import List from "./components/List"
 import Search from "./components/Search"
 
+// hooks
+import useSemiPersistentState from "./hooks/useSemiPersistentState"
+
 const title = "HackerNews Reader"
 
 const stories = [
@@ -26,13 +29,7 @@ const stories = [
 ]
 
 const App = () => {
-    const [searchTerm, setSearchTerm] = useState(
-        localStorage.getItem("search") || "React"
-    )
-
-    useEffect(() => {
-        localStorage.setItem("search", searchTerm)
-    }, [searchTerm])
+    const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React")
 
     const handleSearch = event => {
         setSearchTerm(event.target.value)
