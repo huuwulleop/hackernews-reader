@@ -1,23 +1,25 @@
 
 import React, { useState } from "react"
 
+// components
+import InputWithLabel from "./InputWithLabel";
+
 const Search = ({ onSearch, searchTerm }) => {
     return (
-        <div>
-            <label htmlFor="search">Search: </label>
-            <input
-                type="text"
+        <>
+            <InputWithLabel
                 id="search"
+                label="Search"
+                type="text"
                 value={searchTerm}
-                onChange={onSearch}
+                onInputChange={onSearch}
             />
-
             {searchTerm &&
                 <p>
                     Searching for <strong>{searchTerm}</strong>...
                 </p>
             }
-        </div>
+        </>
     )
 }
 
