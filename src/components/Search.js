@@ -12,6 +12,7 @@ const Search = ({ onSearch, searchTerm }) => {
                 label="Search"
                 type="text"
                 value={searchTerm}
+                isFocused
                 onInputChange={onSearch}
             >
                 <strong>Search:</strong>
