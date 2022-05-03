@@ -2,17 +2,18 @@
 const Item = ({ item, onRemoveItem }) => {
     return (
         <li>
-            <span>
+            {/* <span>
                 <button type="button" onClick={() => onRemoveItem(item)}>
                     Delete
                 </button>
-            </span>
+            </span> */}
             &nbsp;
             <a href={item.url}>{item.title}</a>
 
-            <span> {item.author}</span>
-            <span> {item.num_comments}</span>
-            <span> {item.points}</span>
+            <span> by <strong>{item.author}</strong></span>
+            <br />
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;Points: {item.points}</span>
+            <span> Comments: {item.num_comments}</span>
         </li>
     )
 }
