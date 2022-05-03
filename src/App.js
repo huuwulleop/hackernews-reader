@@ -28,10 +28,26 @@ const initialStories = [
     },
 ]
 
+// TODO:
+const getAsyncStories = () => (
+    new Promise(resolve => (
+        setTimeout(() => (
+            resolve({ data: { stories: initialStories } })
+        ), 2000)
+    ))
+)
+
 const App = () => {
     const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React")
 
-    const [stories, setStories] = useState(initialStories)
+    const [stories, setStories] = useState([])
+
+    // Get stories
+    useEffect(() => {
+        getAsyncStories().then(result => {
+            setStories(result.data.stories)
+        })
+    }, [])
 
     // Remove story
     const handleRemoveStory = (item) => {

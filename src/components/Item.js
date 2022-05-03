@@ -7,7 +7,7 @@ const Item = ({ item, onRemoveItem }) => {
                     Delete
                 </button>
             </span>
-
+            &nbsp;
             <a href={item.url}>{item.title}</a>
 
             <span> {item.author}</span>
