@@ -42,15 +42,18 @@ const App = () => {
 
     const [stories, setStories] = useState([])
     const [isLoading, setIsLoading] = useState(false)
+    const [isError, setIsError] = useState(false)
 
     // Get stories
     useEffect(() => {
         setIsLoading(true)
 
-        getAsyncStories().then(result => {
-            setStories(result.data.stories)
-            setIsLoading(false)
-        })
+        getAsyncStories()
+            .then(result => {
+                setStories(result.data.stories)
+                setIsLoading(false)
+            })
+            .catch(() => setIsError(true))
     }, [])
 
     // Remove story
@@ -76,6 +79,8 @@ const App = () => {
             <h1>{title}</h1>
 
             <Search onSearch={handleSearch} searchTerm={searchTerm} />
+
+            {isError && <p>Failed to load articles</p>}
 
             <hr />
             {isLoading ? (
