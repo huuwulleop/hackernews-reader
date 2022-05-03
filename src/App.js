@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from "react"
+import React, { useState, useEffect, useReducer, useCallback } from "react"
 
 // components
 import List from "./components/List"
@@ -88,20 +88,10 @@ const App = () => {
     )
 
     // Get stories
-    useEffect(() => {
+    const handleFetchStories = useCallback(() => {
         if (!searchTerm) return
-        // setIsLoading(true)
-        dispatchStories({ type: "STORIES_FETCH_INIT" })
 
-        // getAsyncStories()
-        //     .then(result => {
-        //         // setStories(result.data.stories)
-        //         dispatchStories({
-        //             type: "STORIES_FETCH_SUCCESS",
-        //             payload: result.data.stories,
-        //         })
-        //         // setIsLoading(false)
-        //     })
+        dispatchStories({ type: "STORIES_FETCH_INIT" })
 
         fetch(`${API_ENDPOINT}${searchTerm}`)
             .then(response => response.json())
@@ -115,6 +105,10 @@ const App = () => {
                 dispatchStories({ type: "STORIES_FETCH_FAILURE" })
             ))
     }, [searchTerm])
+
+    useEffect(() => {
+        handleFetchStories()
+    }, [handleFetchStories])
 
     // Remove story
     const handleRemoveStory = (item) => {
