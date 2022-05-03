@@ -118,6 +118,8 @@ const App = () => {
                 <List list={searchedStories} onRemoveItem={handleRemoveStory} />
             )}
 
+            {searchedStories.length === 0 && !isLoading && !isError && <p>No articles found</p>}
+
         </div>
     )
 }
