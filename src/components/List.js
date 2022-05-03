@@ -2,11 +2,15 @@
 // components
 import Item from "./Item"
 
-const List = ({ list }) => {
+const List = ({ list, onRemoveItem }) => {
     return (
         <ul>
             {list.map(item => (
-                <Item key={item.objectID} item={item} />
+                <Item
+                    key={item.objectID}
+                    item={item}
+                    onRemoveItem={onRemoveItem}
+                />
             ))}
         </ul>
     )

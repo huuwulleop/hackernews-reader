@@ -4,9 +4,12 @@ import React, { useState, useEffect } from "react"
 import List from "./components/List"
 import Search from "./components/Search"
 
+// hooks
+import useSemiPersistentState from "./hooks/useSemiPersistentState"
+
 const title = "HackerNews Reader"
 
-const stories = [
+const initialStories = [
     {
         title: 'React',
         url: 'https://reactjs.org/',
@@ -25,14 +28,42 @@ const stories = [
     },
 ]
 
-const App = () => {
-    const [searchTerm, setSearchTerm] = useState(
-        localStorage.getItem("search") || "React"
-    )
+// TODO:
+const getAsyncStories = () => (
+    new Promise(resolve => (
+        setTimeout(() => (
+            resolve({ data: { stories: initialStories } })
+        ), 2000)
+    ))
+)
 
+const App = () => {
+    const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React")
+
+    const [stories, setStories] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
+    const [isError, setIsError] = useState(false)
+
+    // Get stories
     useEffect(() => {
-        localStorage.setItem("search", searchTerm)
-    }, [searchTerm])
+        setIsLoading(true)
+
+        getAsyncStories()
+            .then(result => {
+                setStories(result.data.stories)
+                setIsLoading(false)
+            })
+            .catch(() => setIsError(true))
+    }, [])
+
+    // Remove story
+    const handleRemoveStory = (item) => {
+        const newStories = stories.filter(story => (
+            item.objectID !== story.objectID
+        ))
+
+        setStories(newStories)
+    }
 
     const handleSearch = event => {
         setSearchTerm(event.target.value)
@@ -45,13 +76,19 @@ const App = () => {
 
     return (
         <div>
-            <h1>Welcome to {title}</h1>
+            <h1>{title}</h1>
 
             <Search onSearch={handleSearch} searchTerm={searchTerm} />
 
-            <hr />
+            {isError && <p>Failed to load articles</p>}
 
-            <List list={searchedStories} />
+            <hr />
+            {isLoading ? (
+                <p>Loading articles...</p>
+            ) : (
+                <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+            )}
+
         </div>
     )
 }
