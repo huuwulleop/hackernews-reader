@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useCallback } from "react"
+import React, { useState, useEffect, useReducer, useCallback, Fragment } from "react"
 
 // components
 import List from "./components/List"
@@ -127,6 +127,7 @@ const App = () => {
         setUrl(`${API_ENDPOINT}${searchTerm}`)
     }
 
+    // Filters garbage articles
     const checkNull = story => {
         if (!story.title || !story.url || !story.author || !story.num_comments || !story.points) {
             return false
@@ -134,8 +135,9 @@ const App = () => {
         return true
     }
 
+    // search only after clicking submit
     const searchedStories = stories.data.filter(story => (
-        checkNull(story) && story.title.toLowerCase().includes(searchTerm.toLowerCase())
+        checkNull(story) // && story.title.toLowerCase().includes(searchTerm.toLowerCase())
     ))
 
     return (
@@ -147,7 +149,7 @@ const App = () => {
                 handleSearchSubmit={handleSearchSubmit}
                 searchTerm={searchTerm}
             />
-            
+
             {searchTerm && stories.isLoading &&
                 <p>
                     Searching for <strong>{searchTerm}</strong>...
