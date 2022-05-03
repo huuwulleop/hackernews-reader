@@ -27,12 +27,6 @@ const Search = ({ handleSearchInput, handleSearchSubmit, searchTerm }) => {
             >
                 Submit
             </button>
-
-            {searchTerm &&
-                <p>
-                    Searching for <strong>{searchTerm}</strong>...
-                </p>
-            }
         </>
     )
 }

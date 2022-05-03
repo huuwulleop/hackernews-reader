@@ -147,10 +147,17 @@ const App = () => {
                 handleSearchSubmit={handleSearchSubmit}
                 searchTerm={searchTerm}
             />
+            
+            {searchTerm && stories.isLoading &&
+                <p>
+                    Searching for <strong>{searchTerm}</strong>...
+                </p>
+            }
+
+            <hr />
 
             {stories.isError && <p>Failed to load articles</p>}
 
-            <hr />
             {stories.isLoading ? (
                 <p>Loading articles...</p>
             ) : (
