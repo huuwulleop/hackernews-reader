@@ -9,7 +9,7 @@ import useSemiPersistentState from "./hooks/useSemiPersistentState"
 
 const title = "HackerNews Reader"
 
-const stories = [
+const initialStories = [
     {
         title: 'React',
         url: 'https://reactjs.org/',
@@ -31,6 +31,17 @@ const stories = [
 const App = () => {
     const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React")
 
+    const [stories, setStories] = useState(initialStories)
+
+    // Remove story
+    const handleRemoveStory = (item) => {
+        const newStories = stories.filter(story => (
+            item.objectID !== story.objectID
+        ))
+
+        setStories(newStories)
+    }
+
     const handleSearch = event => {
         setSearchTerm(event.target.value)
         // console.log(event.target.value);
@@ -42,13 +53,13 @@ const App = () => {
 
     return (
         <div>
-            <h1>Welcome to {title}</h1>
+            <h1>{title}</h1>
 
             <Search onSearch={handleSearch} searchTerm={searchTerm} />
 
             <hr />
 
-            <List list={searchedStories} />
+            <List list={searchedStories} onRemoveItem={handleRemoveStory} />
         </div>
     )
 }
