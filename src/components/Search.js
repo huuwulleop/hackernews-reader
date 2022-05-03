@@ -13,7 +13,9 @@ const Search = ({ onSearch, searchTerm }) => {
                 type="text"
                 value={searchTerm}
                 onInputChange={onSearch}
-            />
+            >
+                <strong>Search:</strong>
+            </InputWithLabel>
             {searchTerm &&
                 <p>
                     Searching for <strong>{searchTerm}</strong>...
