@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useReducer } from "react"
-import { act } from "react-dom/test-utils"
 
 // components
 import List from "./components/List"
@@ -62,9 +61,6 @@ const storiesReducer = (state, action) => {
         case "SET_STORIES":
             return action.payload
         case "REMOVE_STORY":
-            // return state.filter(story => (
-            //     action.payload.objectID !== story.objectID
-            // ))
             return {
                 ...state,
                 data: state.data.filter(story => (
@@ -82,6 +78,8 @@ const App = () => {
     const [searchTerm, setSearchTerm] = useSemiPersistentState("search", "React")
 
     // const [stories, setStories] = useState([])
+    // const [isLoading, setIsLoading] = useState(false)
+    // const [isError, setIsError] = useState(false)
 
     // reducer
     const [stories, dispatchStories] = useReducer(
@@ -89,11 +87,9 @@ const App = () => {
         { data: [], isLoading: false, isError: false }
     )
 
-    // const [isLoading, setIsLoading] = useState(false)
-    // const [isError, setIsError] = useState(false)
-
     // Get stories
     useEffect(() => {
+        if (!searchTerm) return
         // setIsLoading(true)
         dispatchStories({ type: "STORIES_FETCH_INIT" })
 
@@ -106,7 +102,8 @@ const App = () => {
         //         })
         //         // setIsLoading(false)
         //     })
-        fetch(`${API_ENDPOINT}react`)
+
+        fetch(`${API_ENDPOINT}${searchTerm}`)
             .then(response => response.json())
             .then(result => {
                 dispatchStories({
@@ -117,14 +114,10 @@ const App = () => {
             .catch(() => (
                 dispatchStories({ type: "STORIES_FETCH_FAILURE" })
             ))
-    }, [])
+    }, [searchTerm])
 
     // Remove story
     const handleRemoveStory = (item) => {
-        // const newStories = stories.filter(story => (
-        //     item.objectID !== story.objectID
-        // ))
-
         // setStories(newStories)
         dispatchStories({
             type: "REMOVE_STORY",
@@ -154,7 +147,7 @@ const App = () => {
             {stories.isLoading ? (
                 <p>Loading articles...</p>
             ) : (
-                <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+                <List list={stories.data} onRemoveItem={handleRemoveStory} />
             )}
 
             {searchedStories.length === 0 && !stories.isLoading && !stories.isError && <p>No articles found</p>}
