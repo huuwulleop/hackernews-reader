@@ -90,8 +90,6 @@ const App = () => {
 
     // Get stories
     const handleFetchStories = useCallback(() => {
-        if (!searchTerm) return
-
         dispatchStories({ type: "STORIES_FETCH_INIT" })
 
         fetch(url)
