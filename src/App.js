@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useReducer } from "react"
+import { act } from "react-dom/test-utils"
 
 // components
 import List from "./components/List"
@@ -38,10 +39,15 @@ const getAsyncStories = () => (
 )
 
 const storiesReducer = (state, action) => {
-    if (action.type === "SET_STORIES") {
-        return action.payload
-    } else {
-        throw new Error()
+    switch (action.type) {
+        case "SET_STORIES":
+            return action.payload
+        case "REMOVE_STORIES":
+            return state.filter(story => (
+                action.payload.objectID !== story.objectID
+            ))
+        default:
+            throw new Error()
     }
 }
 
@@ -77,14 +83,14 @@ const App = () => {
 
     // Remove story
     const handleRemoveStory = (item) => {
-        const newStories = stories.filter(story => (
-            item.objectID !== story.objectID
-        ))
+        // const newStories = stories.filter(story => (
+        //     item.objectID !== story.objectID
+        // ))
 
         // setStories(newStories)
         dispatchStories({
-            type: "SET_STORIES",
-            payload: newStories,
+            type: "REMOVE_STORIES",
+            payload: item,
         })
     }
 
